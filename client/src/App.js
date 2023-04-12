@@ -1,22 +1,19 @@
 import "./App.css";
-import { Users } from "./users";
-import { useState } from "react";
+// import { Users } from "./users";
+import { useEffect, useState } from "react";
 import Table from "./Table";
 
 function App() {
    const [query, setQuery] = useState("");
+   const [data, setData] = useState([]);
 
-   const keys = ["first_name", "last_name", "email"];
-
-   const search = (data) => {
-      return data.filter(
-         (item) => keys.some((key) => item[key].toLowerCase().includes(query))
-
-         // item.first_name.toLowerCase().includes(query) ||
-         // item.last_name.toLowerCase().includes(query) ||
-         // item.email.toLowerCase().includes(query)
-      );
-   };
+   useEffect(() => {
+      const fetchUsers = async () => {
+         const res = await fetch(`http://localhost:5000?q=${query}`);
+         setData(await res.json());
+      };
+      if (query.length === 0 || query.length > 1) fetchUsers();
+   }, [query]);
 
    return (
       <div className="App">
@@ -27,7 +24,7 @@ function App() {
          />
          <div className="list-container">
             <ul className="list">
-               <Table data={search(Users)} />
+               <Table data={data} />
             </ul>
          </div>
       </div>
